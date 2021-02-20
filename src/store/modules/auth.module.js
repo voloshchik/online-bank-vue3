@@ -19,7 +19,7 @@ export default {
     },
   },
   actions: {
-    async login({ commit }, payload) {
+    async login({ commit, dispatch }, payload) {
       try {
         const {
           data,
@@ -28,9 +28,18 @@ export default {
           { ...payload, returnSecureToken: true }
         )
         commit('setToken', data.idToken)
-        console.log('data', data)
+        commit('clearMessage', null, { root: true })
       } catch (e) {
+        dispatch(
+          'setMessage',
+          {
+            value: error(e.response.data.error.message),
+            type: 'danger',
+          },
+          { root: true }
+        )
         console.log(error(e.response.data.error.message))
+        throw new Error()
       }
     },
   },
