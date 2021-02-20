@@ -1,11 +1,15 @@
 <template>
   <div class="container">
-    <div class="card"></div>
+    <app-alert></app-alert>
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
-export default {}
+import AppAlert from '@/components/ui/AppAlert'
+export default {
+  components: { AppAlert },
+}
 </script>
 
 <style></style>
