@@ -27,6 +27,7 @@ export default {
           `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${process.env.VUE_APP_FB_KEY}`,
           { ...payload, returnSecureToken: true }
         )
+        console.log('token', data.idToken)
         commit('setToken', data.idToken)
         commit('clearMessage', null, { root: true })
       } catch (e) {
