@@ -4,6 +4,7 @@
     <template #header>
       <button class="btn primary" @click="modal = true">Создать</button>
     </template>
+    <request-filter v-model="filter" />
     <request-table :requests="requests"></request-table>
     <teleport to="body">
       <app-modal v-if="modal" @close="close" title="Создать заявку">
@@ -16,30 +17,61 @@
 <script>
 import AppPage from '@/components/ui/AppPage'
 import RequestTable from '../components/request/RequestTable.vue'
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import AppModal from '../components/ui/AppModal.vue'
 import RequestModal from '@/components/request/RequestModal'
 import { useStore } from 'vuex'
 import AppLoader from '@/components/ui/AppLoader'
+import RequestFilter from '@/components/request/RequestFilter'
+
 export default {
   name: 'Home',
   setup() {
     const modal = ref(false)
     const store = useStore()
     const loading = ref(false)
+    const filter = ref({})
     onMounted(async () => {
       loading.value = true
       await store.dispatch('request/load')
       loading.value = false
     })
-    const requests = computed(() => store.getters['request/requests'])
+    const requests = computed(() =>
+      store.getters['request/requests']
+        .filter((request) => {
+          if (filter.value.name) {
+            return request.fio.includes(filter.value.name)
+          }
+          return request
+        })
+        .filter((request) => {
+          if (filter.value.status) {
+            return filter.value.status === request.status
+          }
+          return request
+        })
+    )
+
+    // watch(filter, (val) => {
+    //   console.log(val)
+    // })
     return {
       modal,
       close: () => (modal.value = false),
       requests,
       loading,
+      filter,
     }
   },
-  components: { AppPage, RequestTable, AppModal, RequestModal, AppLoader, AppLoader },
+  components: {
+    AppPage,
+    RequestTable,
+    AppModal,
+    RequestModal,
+    AppLoader,
+    AppLoader,
+    RequestFilter,
+    RequestFilter,
+  },
 }
 </script>
